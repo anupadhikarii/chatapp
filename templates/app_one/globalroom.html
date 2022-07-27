@@ -1,0 +1,146 @@
+{% extends 'app_one/index2.html' %}
+{% load static %}
+{% block body_right %}
+<div id="plist" class="people-list">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Member....">
+    </div>
+    <ul class="list-unstyled chat-list mt-2 mb-0">
+        <li class="clearfix ">
+            <img src="https://cdn.kastatic.org/images/avatars/svg/robot_female_2.svg" alt="avatar">
+            <div class="about">
+                <div class="name"><a href='{% url 'home' %}' style='text-decoration:none; color:black'  >Riya</a></div>
+                <div class="status"> <i class="fa fa-circle online"></i> Chatsecure bot</div>
+            </div>
+        </li>
+        <ul class="list-unstyled chat-list mt-2 mb-0">
+            <li class="clearfix active ">
+                <img src="{% static 'img/index.jpeg' %}" alt="avatar">
+                <div class="about">
+                    <div class="name">GlobalRoom</div>
+                    <div class="status"> <i class="fa fa-circle online"></i> Worldwide</div>
+                </div>
+            </li>
+    
+    </ul>
+</div>
+{% endblock body_right %}
+{% block body_left %}  
+<div class="chat">
+    <div class="chat-header clearfix">
+        <div class="row">
+            <div class="col-lg-6">
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                    <img src="{% static 'img/index.jpeg' %}" alt="avatar">
+                </a>
+                <div class="chat-about">
+                    <h6 class="m-b-0"> GlobalRoom </h6>
+                    <small>
+                        <div class="status"> <i class="fa fa-circle online"></i> Worldwide comunication </div>
+                    </small>
+                </div>
+            </div>
+            <div class="col-lg-6 hidden-sm text-right">
+                {% comment %} <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
+                 {% endcomment %}
+                 <a href="{% url 'join_room' %}" class="btn btn-outline-primary"><small>JoinRoom+</small></i></a>
+                 <a href="{% url 'logout' %}" class="btn btn-outline-danger"><small>Logout</small></i></a>
+                 <a href="{% url 'profile' %}" class="btn btn-outline-primary"><i class="fa fa-cogs"></i></a>
+
+            </div>
+        </div>
+    </div>
+    <div class="chat-history" id='chat-history' >
+        {% if g_message %}
+        {% for message in g_message  %}
+        <ul class="m-b-0">
+            {% if user.username.capitalize == message.message_send_by %}
+            <li class="clearfix">
+                <div class="message-data text-right">
+                </div>
+                <div class="message other-message float-right"> {{message.message}} </div>
+            </li>
+            {% else %}  
+            <li class="clearfix">
+                <div class="message-data">
+                    <span class="message-data-time">{{message.message_send_by}}</span>
+                </div>
+                <div class="message my-message">{{message.message}}</div>                                    
+            </li>                               
+           </ul>
+
+            {% endif %}      
+        {% endfor %}
+        {% endif %}
+    </div>
+    <div class="chat-message clearfix">
+        <div class="input-group mb-0">
+           
+            <input type="text" class="form-control" name='message' id='message_send' placeholder="Enter text here...">       
+            <div class="input-group-prepend">   
+                <button  id='submit'>
+                    <span class="input-group-text" ><i class="fa fa-send"></i></span>
+            </button>
+            </div>                 
+                        
+        </div>
+    </div>
+</div>
+{% endblock body_left %}
+{% block js %}
+{{user.username.capitalize|json_script:"user-name"}}
+<script type="text/javascript">
+    const un  = JSON.parse(document.getElementById('user-name').textContent)
+    var ws = new WebSocket("ws://127.0.0.1:8000/ws/global");
+    ws.onopen = function(event){
+        console.log('websocket connected');
+    }
+    ws.onmessage = function(event){
+        const data = JSON.parse(event.data)
+        console.log(data)
+        if (data.user == un){
+
+            var html = ' <ul class="m-b-0">'  +
+            '<li class="clearfix">' +
+                '<div class="message-data">' +
+                    '<span class="message-data-time" >' + '</span>' +
+                '</div>' +
+                '<div class="message other-message float-right" >'+ data.msg +
+                '</div>'+
+                '</li>' 
+                '</ul>';
+                document.getElementById('chat-history').innerHTML += html
+            
+                // document.getElementById('chat_logright').innerText += (data.msg + '\n') 
+            }else{
+                var html = ' <ul class="m-b-0">' + 
+                 '<li class="clearfix">' +
+
+                    '<div class="message-data">' + 
+                        '<span class="message-data-time" >' + data.user+ '</span>' +
+                       
+                    '</div>' +
+                    '<div class="message my-message" >' + data.msg +
+                    '</div>'
+                '</li>'
+                '/ul';
+        document.getElementById('chat-history').innerHTML += html
+        //document.getElementById('username_left').innerText += (data.user + '\n')
+    }
+}
+    ws.onerror = function(event){
+    } 
+    document.getElementById('submit').onclick = function(event){
+        const messageDom = document.getElementById('message_send')
+        const message = messageDom.value
+        ws.send(JSON.stringify({
+            'msg':message,
+            'user': un
+        }))
+        messageDom.value = ''
+    }
+</script>
+{% endblock js %}

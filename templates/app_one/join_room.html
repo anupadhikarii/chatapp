@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--  This file has been downloaded from bootdey.com @bootdey on twitter -->
+    <!--  All snippets are MIT license http://bootdey.com/license -->
+    <title>chat app - Bootdey.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/all.css' %}" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="{% static 'css/join_room.css' %}" rel="stylesheet" type='text/css'>
+
+</head>
+
+<body>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+ {% if messages %}
+    {% for message in messages  %}
+    <div class="alert alert-{{message.tags}}" role="alert">
+       {{message}}
+      </div>
+    {% endfor %}
+{% endif %}
+<div class="container">
+<div class="row clearfix">
+    <div class="col-lg-12">
+        <div class="card chat-app">
+            <div id="plist" class="people-list">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Search...">
+                </div>
+                {% for room in rooms %}
+                <ul class="list-unstyled chat-list mt-2 mb-0">
+                    <li class="clearfix">
+                        <img src="https://www.pngitem.com/pimgs/m/572-5721251_house-outside-cartoon-png-transparent-png.png" alt="avatar">
+                        <div class="about">
+                            <div class="name">{{room.room}}</div>
+                            <div class="status"> <i class="fa fa-circle online"></i> Creater: {{room.admin}} </div>                                            
+                        </div>
+                    </li>                             
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="chat">
+                <div class="chat-header clearfix">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar">
+                            </a>
+                            <div class="chat-about">
+                                <h6 class="m-b-0">{{user.username}}</h6>
+                                <small>secure chatting</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 hidden-sm text-right">
+                            {% comment %} <a href="javascript:void(0);" class="btn btn-outline-secondary"><i class="fa fa-camera"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-outline-primary"><i class="fa fa-image"></i></a> {% endcomment %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-primary"><small>Home</small></i></a>
+                            <a href="{% url 'logout' %}" class="btn btn-outline-danger"><small>Logout</small></i></a>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-history">
+                    <form method='POST' action='{% url 'secure_room' %}'>
+
+                        {% csrf_token %}
+                
+                        <div class="form-group row">
+                          <label for="Roomid"  class="col-sm-2 col-form-label">Room </label>
+                          <div class="col-sm-10">
+                            <input type="text"  class="form-control" id="staticEmail" name='room' placeholder='room id'>
+
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                          <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                          <div class="col-sm-10">
+                            <input type="password" class="form-control" name='password' id="inputPassword" placeholder="Passwords" value=''>
+                          </div>
+                        <input type='hidden' name='admin' value='{{user.username}}'>  
+                        </div>
+                        
+                         
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="create_new_room" name='create_new_room' id="flexCheckChecked" >
+                            <label class="form-check-label" for="flexCheckChecked">
+                              Create room
+                            </label>
+                        </div>    
+                        <button type="submit" class="btn btn-primary  mb-2 ">EnterRoom</button>
+                      </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
