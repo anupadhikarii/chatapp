@@ -4,8 +4,12 @@ This is Chat Application Project built with Python Django famework which impleme
 ------------------------------------------------------
 Major Feature of this APP are:
 -Authentication and logout
+
 -Global Chatroom
+
 -Private Room
+
 -ChatBot(AI)
+
 -Wesockets
 
